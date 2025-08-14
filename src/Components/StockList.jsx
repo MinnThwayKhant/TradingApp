@@ -26,23 +26,26 @@ export const StockList = () => {
                     }, {signal: abortController.signal})
                  })
                     )
-s
+
                 const data = responses.map((response) => {
                     return {
                         data: response.data,
                         symbol: response.config.params.symbol,
                     }
                 })
-                console.log(data)
                 setStock(data)
 
             } catch (error) {
-                setError('Something went wrong! ' + error)
+                if(error.status === 429){
+                    console.error("Rate limit exceeded. Please wait before trying again.");
+                } else {
+                     setError('Something went wrong! ' + error.message)
+                }
+               
             } finally {
                 setLoading(false)
             }
         }
-
         fetchData();
 
         return () => { abortController.abort() }
@@ -56,6 +59,13 @@ s
             </div>
         )
     }
+
+    if(error){
+        <div className='flex justify-center w-full items-center h-150 text-3xl gap-4'>
+                <p className='text-red-400'>{error}</p>
+            </div>
+    }
+
   return (
     <div className='w-full flex justify-center'>
         <table className='mt-5 w-50 md:w-260'>
