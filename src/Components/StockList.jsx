@@ -2,10 +2,12 @@ import React, { useEffect, useState } from 'react'
 import finnhub from '../Apis/finnhub'
 import { FaCaretDown, FaCaretUp } from "react-icons/fa";
 import { AiOutlineLoading3Quarters } from "react-icons/ai";
+import { useGlobalContext } from '../Context/WatchListContext';
 
 export const StockList = () => {
+
+    const { watchList } = useGlobalContext();
     const [stock, setStock] = useState([])
-    const [watchList, setWatchList] = useState(["AAPL", "GOOGL", "MSFT", "AMZN", "META", "TSLA", "NVDA", "JPM",])
     const [loading, setLoading] = useState(false)
     const [error, setError] = useState(null)
 
@@ -37,7 +39,7 @@ export const StockList = () => {
 
             } catch (error) {
                 if(error.status === 429){
-                    console.error("Rate limit exceeded. Please wait before trying again.");
+                    setError("Rate limit exceeded. Please wait before trying again.");
                 } else {
                      setError('Something went wrong! ' + error.message)
                 }
@@ -49,7 +51,7 @@ export const StockList = () => {
         fetchData();
 
         return () => { abortController.abort() }
-    }, [])
+    }, [watchList])
 
     if(loading){
         return(
@@ -67,7 +69,7 @@ export const StockList = () => {
     }
 
   return (
-    <div className='w-full flex justify-center'>
+    <div className='w-full flex justify-center relative'>
         <table className='mt-5 w-50 md:w-260'>
             <thead className='border-b-1'>
                 <tr className=''>
